@@ -16,13 +16,16 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		
-		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<Version>1.0.0.1</Version>
 		<Description>Bluetooth LE for .Net Maui</Description>
 		<PackageTags>maui ble bluetooth</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<LangVersion>Latest</LangVersion>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<RepositoryUrl>https://github.com/taublast/AppoMobi.Maui.BLE</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
 	</PropertyGroup>
 
