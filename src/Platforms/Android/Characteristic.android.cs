@@ -97,7 +97,7 @@ namespace AppoMobi.Maui.BLE
 				throw new CharacteristicReadException("Gatt characteristic set value FAILED.");
 			}
 
-			Trace.Message("Write {0}", Id);
+			Trace.WriteLine("Write {0}", Id);
 
 			if (!_gatt.WriteCharacteristic(NativeCharacteristic))
 			{
@@ -132,21 +132,21 @@ namespace AppoMobi.Maui.BLE
 				if (descriptor != null && Properties.HasFlag(CharacteristicPropertyType.Indicate))
 				{
 					await descriptor.WriteAsync(BluetoothGattDescriptor.EnableIndicationValue.ToArray());
-					Trace.Message("Descriptor set value: INDICATE");
+					Trace.WriteLine("Descriptor set value: INDICATE");
 				}
 
 				if (descriptor != null && Properties.HasFlag(CharacteristicPropertyType.Notify))
 				{
 					await descriptor.WriteAsync(BluetoothGattDescriptor.EnableNotificationValue.ToArray());
-					Trace.Message("Descriptor set value: NOTIFY");
+					Trace.WriteLine("Descriptor set value: NOTIFY");
 				}
 			}
 			else
 			{
-				Trace.Message("Descriptor set value FAILED: _nativeCharacteristic.Descriptors was empty");
+				Trace.WriteLine("Descriptor set value FAILED: _nativeCharacteristic.Descriptors was empty");
 			}
 
-			Trace.Message("Characteristic.StartUpdates, successful!");
+			Trace.WriteLine("Characteristic.StartUpdates, successful!");
 		}
 
 		protected async Task StopUpdatesNativeAsync()
@@ -168,12 +168,12 @@ namespace AppoMobi.Maui.BLE
 				if (descriptor != null && (Properties.HasFlag(CharacteristicPropertyType.Notify) || Properties.HasFlag(CharacteristicPropertyType.Indicate)))
 				{
 					await descriptor.WriteAsync(BluetoothGattDescriptor.DisableNotificationValue.ToArray());
-					Trace.Message("Descriptor set value: DISABLE_NOTIFY");
+					Trace.WriteLine("Descriptor set value: DISABLE_NOTIFY");
 				}
 			}
 			else
 			{
-				Trace.Message("StopUpdatesNativeAsync descriptor set value FAILED: _nativeCharacteristic.Descriptors was empty");
+				Trace.WriteLine("StopUpdatesNativeAsync descriptor set value FAILED: _nativeCharacteristic.Descriptors was empty");
 			}
 		}
 

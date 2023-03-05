@@ -49,7 +49,7 @@ namespace AppoMobi.Maui.BLE
     private void OnNameUpdated(object sender, System.EventArgs e)
     {
       Name = ((CBPeripheral)sender).Name;
-      Trace.Message("Device changed name: {0}", Name);
+      Trace.WriteLine("Device changed name: {0}", Name);
     }
 
     private Task<IReadOnlyList<Maui.BLE.Service>> GetServicesNativeAsync()
@@ -170,13 +170,13 @@ namespace AppoMobi.Maui.BLE
 
     private async Task<int> RequestMtuNativeAsync(int requestValue)
     {
-      Trace.Message($"Request MTU is not supported on iOS.");
+      Trace.WriteLine($"Request MTU is not supported on iOS.");
       return await Task.FromResult((int)NativeDevice.GetMaximumWriteValueLength(CBCharacteristicWriteType.WithoutResponse));
     }
 
     private bool UpdateConnectionIntervalNative(ConnectionInterval interval)
     {
-      Trace.Message("Cannot update connection inteval on iOS.");
+      Trace.WriteLine("Cannot update connection inteval on iOS.");
       return false;
     }
 

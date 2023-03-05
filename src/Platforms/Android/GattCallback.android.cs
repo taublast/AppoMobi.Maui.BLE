@@ -39,14 +39,14 @@ namespace AppoMobi.Maui.BLE
 
 			if (!gatt.Device.Address.Equals(_device.NativeDevice.Address))
 			{
-				Trace.Message($"Gatt callback for device {_device.NativeDevice.Address} was called for device with address {gatt.Device.Address}. This shoud not happen. Please log an issue.");
+				Trace.WriteLine($"Gatt callback for device {_device.NativeDevice.Address} was called for device with address {gatt.Device.Address}. This shoud not happen. Please log an issue.");
 				return;
 			}
 
 			//ToDo ignore just for me
-			Trace.Message($"References of parent device and gatt callback device equal? {ReferenceEquals(_device.NativeDevice, gatt.Device).ToString().ToUpper()}");
+			Trace.WriteLine($"References of parent device and gatt callback device equal? {ReferenceEquals(_device.NativeDevice, gatt.Device).ToString().ToUpper()}");
 
-			Trace.Message($"OnConnectionStateChange: GattStatus: {status}");
+			Trace.WriteLine($"OnConnectionStateChange: GattStatus: {status}");
 
 			switch (newState)
 			{
@@ -58,7 +58,7 @@ namespace AppoMobi.Maui.BLE
 					// If status == 19, then connection was closed by the peripheral device (clean disconnect), consider this as a DeviceDisconnected
 					if (_device.IsOperationRequested || (int)status == 19)
 					{
-						Trace.Message("Disconnected by user");
+						Trace.WriteLine("Disconnected by user");
 
 						//Found so we can remove it
 						_device.IsOperationRequested = false;
@@ -68,7 +68,7 @@ namespace AppoMobi.Maui.BLE
 						{
 							// The above error event handles the case where the error happened during a Connect call, which will close out any waiting asyncs.
 							// Android > 5.0 uses this switch branch when an error occurs during connect
-							Trace.Message($"Error while connecting '{_device.Name}'. Not raising disconnect event.");
+							Trace.WriteLine($"Error while connecting '{_device.Name}'. Not raising disconnect event.");
 							_adapter.HandleConnectionFail(_device, $"GattCallback error: {status}");
 						}
 						else
@@ -81,7 +81,7 @@ namespace AppoMobi.Maui.BLE
 					}
 
 					//connection must have been lost, because the callback was not triggered by calling disconnect
-					Trace.Message($"Disconnected '{_device.Name}' by lost connection");
+					Trace.WriteLine($"Disconnected '{_device.Name}' by lost connection");
 
 					_adapter.ConnectedDeviceRegistry.TryRemove(gatt.Device.Address, out _);
 					_adapter.HandleDisconnectedDevice(false, _device);
@@ -91,11 +91,11 @@ namespace AppoMobi.Maui.BLE
 					break;
 
 				case ProfileState.Connecting:
-					Trace.Message("Connecting");
+					Trace.WriteLine("Connecting");
 					break;
 
 				case ProfileState.Connected:
-					Trace.Message("Connected");
+					Trace.WriteLine("Connected");
 
 					//Check if the operation was requested by the user
 					if (_device.IsOperationRequested)
@@ -116,7 +116,7 @@ namespace AppoMobi.Maui.BLE
 					{
 						// The above error event handles the case where the error happened during a Connect call, which will close out any waiting asyncs.
 						// Android <= 4.4 uses this switch branch when an error occurs during connect
-						Trace.Message($"Error while connecting '{_device.Name}'. GattStatus: {status}. ");
+						Trace.WriteLine($"Error while connecting '{_device.Name}'. GattStatus: {status}. ");
 						_adapter.HandleConnectionFail(_device, $"GattCallback error: {status}");
 
 						CloseGattInstances(gatt);
@@ -130,14 +130,14 @@ namespace AppoMobi.Maui.BLE
 					break;
 
 				case ProfileState.Disconnecting:
-					Trace.Message("Disconnecting");
+					Trace.WriteLine("Disconnecting");
 					break;
 			}
 		}
 
 		private void CloseGattInstances(BluetoothGatt gatt)
 		{
-			Trace.Message($"References of parent device gatt and callback gatt equal? {ReferenceEquals(_device._gatt, gatt).ToString().ToUpper()}");
+			Trace.WriteLine($"References of parent device gatt and callback gatt equal? {ReferenceEquals(_device._gatt, gatt).ToString().ToUpper()}");
 
 			if (!ReferenceEquals(gatt, _device._gatt))
 			{
@@ -151,55 +151,55 @@ namespace AppoMobi.Maui.BLE
 		public override void OnServicesDiscovered(BluetoothGatt gatt, GattStatus status)
 		{
 			base.OnServicesDiscovered(gatt, status);
-			Trace.Message("OnServicesDiscovered: {0}", status.ToString());
+			Trace.WriteLine("OnServicesDiscovered: {0}", status.ToString());
 			ServicesDiscovered?.Invoke(this, new ServicesDiscoveredCallbackEventArgs());
 		}
 
 		public override void OnCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, GattStatus status)
 		{
 			base.OnCharacteristicRead(gatt, characteristic, status);
-			Trace.Message("OnCharacteristicRead: value {0}; status {1}", characteristic.GetValue().ToHexString(), status);
+			Trace.WriteLine("OnCharacteristicRead: value {0}; status {1}", characteristic.GetValue().ToHexString(), status);
 			CharacteristicValueUpdated?.Invoke(this, new CharacteristicReadCallbackEventArgs(characteristic));
 		}
 
 		public override void OnCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
 		{
 			base.OnCharacteristicChanged(gatt, characteristic);
-			Trace.Message("OnCharacteristicChanged: value {0}", characteristic.GetValue().ToHexString());
+			Trace.WriteLine("OnCharacteristicChanged: value {0}", characteristic.GetValue().ToHexString());
 			CharacteristicValueUpdated?.Invoke(this, new CharacteristicReadCallbackEventArgs(characteristic));
 		}
 
 		public override void OnCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, GattStatus status)
 		{
 			base.OnCharacteristicWrite(gatt, characteristic, status);
-			Trace.Message("OnCharacteristicWrite: value {0} status {1}", characteristic.GetValue().ToHexString(), status);
+			Trace.WriteLine("OnCharacteristicWrite: value {0} status {1}", characteristic.GetValue().ToHexString(), status);
 			CharacteristicValueWritten?.Invoke(this, new CharacteristicWriteCallbackEventArgs(characteristic, GetExceptionFromGattStatus(status)));
 		}
 
 		public override void OnReliableWriteCompleted(BluetoothGatt gatt, GattStatus status)
 		{
 			base.OnReliableWriteCompleted(gatt, status);
-			Trace.Message("OnReliableWriteCompleted: {0}", status);
+			Trace.WriteLine("OnReliableWriteCompleted: {0}", status);
 		}
 
 		public override void OnMtuChanged(BluetoothGatt gatt, int mtu, GattStatus status)
 		{
 			base.OnMtuChanged(gatt, mtu, status);
-			Trace.Message("OnMtuChanged to value: {0}", mtu);
+			Trace.WriteLine("OnMtuChanged to value: {0}", mtu);
 			MtuRequested?.Invoke(this, new MtuRequestCallbackEventArgs(GetExceptionFromGattStatus(status), mtu));
 		}
 
 		public override void OnReadRemoteRssi(BluetoothGatt gatt, int rssi, GattStatus status)
 		{
 			base.OnReadRemoteRssi(gatt, rssi, status);
-			Trace.Message("OnReadRemoteRssi: device {0} status {1} value {2}", gatt.Device.Name, status, rssi);
+			Trace.WriteLine("OnReadRemoteRssi: device {0} status {1} value {2}", gatt.Device.Name, status, rssi);
 			RemoteRssiRead?.Invoke(this, new RssiReadCallbackEventArgs(GetExceptionFromGattStatus(status), rssi));
 		}
 
 		public override void OnDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, GattStatus status)
 		{
 			base.OnDescriptorWrite(gatt, descriptor, status);
-			Trace.Message("OnDescriptorWrite: {0}", descriptor.GetValue()?.ToHexString());
+			Trace.WriteLine("OnDescriptorWrite: {0}", descriptor.GetValue()?.ToHexString());
 			DescriptorValueWritten?.Invoke(this, new DescriptorCallbackEventArgs(descriptor, GetExceptionFromGattStatus(status)));
 		}
 
@@ -207,7 +207,7 @@ namespace AppoMobi.Maui.BLE
 		{
 			base.OnDescriptorRead(gatt, descriptor, status);
 
-			Trace.Message("OnDescriptorRead: {0}", descriptor.GetValue()?.ToHexString());
+			Trace.WriteLine("OnDescriptorRead: {0}", descriptor.GetValue()?.ToHexString());
 
 			DescriptorValueRead?.Invoke(this, new DescriptorCallbackEventArgs(descriptor, GetExceptionFromGattStatus(status)));
 		}

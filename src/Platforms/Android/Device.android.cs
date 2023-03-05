@@ -128,7 +128,7 @@ namespace AppoMobi.Maui.BLE
 
                 if (!Enum.IsDefined(typeof(AdvertisementRecordType), type))
                 {
-                    Trace.Message("Advertisment record type not defined: {0}", type);
+                    Trace.WriteLine("Advertisment record type not defined: {0}", type);
                     break;
                 }
 
@@ -158,7 +158,7 @@ namespace AppoMobi.Maui.BLE
 
                 var record = new AdvertisementRecord((AdvertisementRecordType)type, data);
 
-                Trace.Message(record.ToString());
+                Trace.WriteLine(record.ToString());
 
                 records.Add(record);
 
@@ -195,7 +195,7 @@ namespace AppoMobi.Maui.BLE
         {
             if (_gatt == null || _gattCallback == null)
             {
-                Trace.Message("You can't read the RSSI value for disconnected devices except on discovery on Android. Device is {0}", State);
+                Trace.WriteLine("You can't read the RSSI value for disconnected devices except on discovery on Android. Device is {0}", State);
                 return false;
             }
 
@@ -205,13 +205,13 @@ namespace AppoMobi.Maui.BLE
               {
                   if (args.Error == null)
                   {
-                      Trace.Message("Read RSSI for {0} {1}: {2}", Id, Name, args.Rssi);
+                      Trace.WriteLine("Read RSSI for {0} {1}: {2}", Id, Name, args.Rssi);
                       Rssi = args.Rssi;
                       complete(true);
                   }
                   else
                   {
-                      Trace.Message($"Failed to read RSSI for device {Id}-{Name}. {args.Error.Message}");
+                      Trace.WriteLine($"Failed to read RSSI for device {Id}-{Name}. {args.Error.Message}");
                       complete(false);
                   }
               }),
@@ -229,13 +229,13 @@ namespace AppoMobi.Maui.BLE
         {
             if (_gatt == null || _gattCallback == null)
             {
-                Trace.Message("You can't request a MTU for disconnected devices. Device is {0}", State);
+                Trace.WriteLine("You can't request a MTU for disconnected devices. Device is {0}", State);
                 return -1;
             }
 
             if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
             {
-                Trace.Message($"Request MTU not supported in this Android API level");
+                Trace.WriteLine($"Request MTU not supported in this Android API level");
                 return -1;
             }
 
@@ -245,7 +245,7 @@ namespace AppoMobi.Maui.BLE
               {
                   if (args.Error != null)
                   {
-                      Trace.Message($"Failed to request MTU ({requestValue}) for device {Id}-{Name}. {args.Error.Message}");
+                      Trace.WriteLine($"Failed to request MTU ({requestValue}) for device {Id}-{Name}. {args.Error.Message}");
                       reject(new Exception($"Request MTU error: {args.Error.Message}"));
                   }
                   else
@@ -268,13 +268,13 @@ namespace AppoMobi.Maui.BLE
         {
             if (_gatt == null || _gattCallback == null)
             {
-                Trace.Message("You can't update a connection interval for disconnected devices. Device is {0}", State);
+                Trace.WriteLine("You can't update a connection interval for disconnected devices. Device is {0}", State);
                 return false;
             }
 
             if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
             {
-                Trace.Message($"Update connection interval paramter in this Android API level");
+                Trace.WriteLine($"Update connection interval paramter in this Android API level");
                 return false;
             }
 
@@ -375,7 +375,7 @@ namespace AppoMobi.Maui.BLE
             }
             else
             {
-                Trace.Message("[Warning]: Can't disconnect {0}. Gatt is null.", Name);
+                Trace.WriteLine("[Warning]: Can't disconnect {0}. Gatt is null.", Name);
             }
         }
 

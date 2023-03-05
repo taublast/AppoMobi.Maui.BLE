@@ -103,7 +103,7 @@ namespace AppoMobi.Maui.BLE
 						}
 						else
 						{
-							Trace.Message($"Read characterteristic value: {Value?.ToHexString()}");
+							Trace.WriteLine($"Read characterteristic value: {Value?.ToHexString()}");
 							complete(Value);
 						}
 					},
@@ -186,7 +186,7 @@ namespace AppoMobi.Maui.BLE
 					  }
 					  else
 					  {
-						  Trace.Message($"StartUpdates IsNotifying: {args.Characteristic.IsNotifying}");
+						  Trace.WriteLine($"StartUpdates IsNotifying: {args.Characteristic.IsNotifying}");
 						  complete(args.Characteristic.IsNotifying);
 					  }
 				  },
@@ -226,7 +226,7 @@ namespace AppoMobi.Maui.BLE
 					}
 					else
 					{
-						Trace.Message($"StopUpdates IsNotifying: {args.Characteristic.IsNotifying}");
+						Trace.WriteLine($"StopUpdates IsNotifying: {args.Characteristic.IsNotifying}");
 						complete(args.Characteristic.IsNotifying);
 					}
 				},

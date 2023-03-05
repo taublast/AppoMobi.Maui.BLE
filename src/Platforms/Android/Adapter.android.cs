@@ -63,7 +63,7 @@ namespace AppoMobi.Maui.BLE
 				uuids = serviceUuids.Select(u => UUID.FromString(u.ToString())).ToArray();
 			}
 
-			Trace.Message("Adapter < 21: Starting a scan for devices.");
+			Trace.WriteLine("Adapter < 21: Starting a scan for devices.");
 #pragma warning disable 618
 			_bluetoothAdapter.StartLeScan(uuids, _api18ScanCallback);
 #pragma warning restore 618
@@ -97,17 +97,17 @@ namespace AppoMobi.Maui.BLE
 
 			if (_bluetoothAdapter.BluetoothLeScanner != null)
 			{
-				Trace.Message($"Adapter >=21: Starting a scan for devices. ScanMode: {ScanMode}");
+				Trace.WriteLine($"Adapter >=21: Starting a scan for devices. ScanMode: {ScanMode}");
 				if (hasFilter)
 				{
-					Trace.Message($"ScanFilters: {string.Join(", ", serviceUuids)}");
+					Trace.WriteLine($"ScanFilters: {string.Join(", ", serviceUuids)}");
 				}
 
 				_bluetoothAdapter.BluetoothLeScanner.StartScan(scanFilters, ssb.Build(), _api21ScanCallback);
 			}
 			else
 			{
-				Trace.Message("Adapter >= 21: Scan failed. Bluetooth is probably off");
+				Trace.WriteLine("Adapter >= 21: Scan failed. Bluetooth is probably off");
 			}
 		}
 
@@ -115,14 +115,14 @@ namespace AppoMobi.Maui.BLE
 		{
 			if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
 			{
-				Trace.Message("Adapter < 21: Stopping the scan for devices.");
+				Trace.WriteLine("Adapter < 21: Stopping the scan for devices.");
 #pragma warning disable 618
 				_bluetoothAdapter.StopLeScan(_api18ScanCallback);
 #pragma warning restore 618
 			}
 			else
 			{
-				Trace.Message("Adapter >= 21: Stopping the scan for devices.");
+				Trace.WriteLine("Adapter >= 21: Stopping the scan for devices.");
 				_bluetoothAdapter.BluetoothLeScanner?.StopScan(_api21ScanCallback);
 			}
 		}
@@ -163,7 +163,7 @@ namespace AppoMobi.Maui.BLE
 		{
 			if (services != null)
 			{
-				Trace.Message("Caution: GetSystemConnectedDevices does not take into account the 'services' parameter on Android.");
+				Trace.WriteLine("Caution: GetSystemConnectedDevices does not take into account the 'services' parameter on Android.");
 			}
 
 			//add dualMode type too as they are BLE too ;)
@@ -198,7 +198,7 @@ namespace AppoMobi.Maui.BLE
 
 			public void OnLeScan(BluetoothDevice bleDevice, int rssi, byte[] scanRecord)
 			{
-				Trace.Message("Adapter.LeScanCallback: " + bleDevice.Name);
+				Trace.WriteLine("Adapter.LeScanCallback: " + bleDevice.Name);
 
 				_adapter.HandleDiscoveredDevice(new Maui.BLE.Device(_adapter, bleDevice, null, rssi, scanRecord));
 			}
@@ -214,7 +214,7 @@ namespace AppoMobi.Maui.BLE
 
 			public override void OnScanFailed(ScanFailure errorCode)
 			{
-				Trace.Message("Adapter: Scan failed with code {0}", errorCode);
+				Trace.WriteLine("Adapter: Scan failed with code {0}", errorCode);
 				base.OnScanFailed(errorCode);
 			}
 

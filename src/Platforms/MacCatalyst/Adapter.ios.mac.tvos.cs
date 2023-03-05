@@ -25,7 +25,7 @@ namespace AppoMobi.Maui.BLE
 
             _bleCentralManagerDelegate.DiscoveredPeripheral += (sender, e) =>
             {
-                Trace.Message("DiscoveredPeripheral: {0}, Id: {1}", e.Peripheral.Name, e.Peripheral.Identifier);
+                Trace.WriteLine("DiscoveredPeripheral: {0}, Id: {1}", e.Peripheral.Name, e.Peripheral.Identifier);
                 var name = e.Peripheral.Name;
                 if (e.AdvertisementData.ContainsKey(CBAdvertisement.DataLocalNameKey))
                 {
@@ -41,7 +41,7 @@ namespace AppoMobi.Maui.BLE
 
             _bleCentralManagerDelegate.UpdatedState += (sender, e) =>
             {
-                Trace.Message("UpdatedState: {0}", _centralManager.State);
+                Trace.WriteLine("UpdatedState: {0}", _centralManager.State);
                 _stateChanged.Set();
 
                 //handle PoweredOff state
@@ -60,7 +60,7 @@ namespace AppoMobi.Maui.BLE
 
             _bleCentralManagerDelegate.ConnectedPeripheral += (sender, e) =>
             {
-                Trace.Message("ConnectedPeripherial: {0}", e.Peripheral.Name);
+                Trace.WriteLine("ConnectedPeripherial: {0}", e.Peripheral.Name);
 
                 // when a peripheral gets connected, add that peripheral to our running list of connected peripherals
                 var guid = ParseDeviceGuid(e.Peripheral).ToString();
@@ -73,7 +73,7 @@ namespace AppoMobi.Maui.BLE
                 }
                 else
                 {
-                    Trace.Message("Device not found in operation registry. Creating a new one.");
+                    Trace.WriteLine("Device not found in operation registry. Creating a new one.");
                     device = new Maui.BLE.Device(this, e.Peripheral, _bleCentralManagerDelegate);
                 }
 
@@ -85,7 +85,7 @@ namespace AppoMobi.Maui.BLE
             {
                 if (e.Error != null)
                 {
-                    Trace.Message("Disconnect error {0} {1} {2}", e.Error.Code, e.Error.Description, e.Error.Domain);
+                    Trace.WriteLine("Disconnect error {0} {1} {2}", e.Error.Code, e.Error.Description, e.Error.Domain);
                 }
 
                 // when a peripheral disconnects, remove it from our running list.
@@ -108,7 +108,7 @@ namespace AppoMobi.Maui.BLE
                 // remove from connected devices
                 if (!ConnectedDeviceRegistry.TryRemove(stringId, out foundDevice))
                 {
-                    Trace.Message($"Device with id '{stringId}' was not found in the connected device registry. Nothing to remove.");
+                    Trace.WriteLine($"Device with id '{stringId}' was not found in the connected device registry. Nothing to remove.");
                 }
 
                 foundDevice = foundDevice ?? new Maui.BLE.Device(this, e.Peripheral, _bleCentralManagerDelegate);
@@ -145,13 +145,13 @@ namespace AppoMobi.Maui.BLE
             if (scanCancellationToken.IsCancellationRequested)
                 throw new TaskCanceledException("StartScanningForDevicesNativeAsync cancelled");
 
-            Trace.Message("Adapter: Starting a scan for devices.");
+            Trace.WriteLine("Adapter: Starting a scan for devices.");
 
             CBUUID[] serviceCbuuids = null;
             if (serviceUuids != null && serviceUuids.Any())
             {
                 serviceCbuuids = serviceUuids.Select(u => CBUUID.FromString(u.ToString())).ToArray();
-                Trace.Message("Adapter: Scanning for " + serviceCbuuids.First());
+                Trace.WriteLine("Adapter: Scanning for " + serviceCbuuids.First());
             }
 
             _centralManager.ScanForPeripherals(serviceCbuuids, new PeripheralScanningOptions { AllowDuplicatesKey = allowDuplicatesKey });
@@ -172,7 +172,7 @@ namespace AppoMobi.Maui.BLE
         {
             if (connectParameters.AutoConnect)
             {
-                Trace.Message("Warning: Autoconnect is not supported in iOS");
+                Trace.WriteLine("Warning: Autoconnect is not supported in iOS");
             }
 
             _deviceOperationRegistry[device.Id.ToString()] = device;
@@ -184,7 +184,7 @@ namespace AppoMobi.Maui.BLE
             // move ConnectToDeviceAsync() code to native implementations.
             cancellationToken.Register(() =>
             {
-                Trace.Message("Canceling the connect attempt");
+                Trace.WriteLine("Canceling the connect attempt");
                 _centralManager.CancelPeripheralConnection(device.NativeDevice as CBPeripheral);
             });
 
@@ -210,7 +210,7 @@ namespace AppoMobi.Maui.BLE
             //FYI attempted to use tobyte array insetead of string but there was a problem with byte ordering Guid->NSUui
             var uuid = new NSUuid(deviceGuid.ToString());
 
-            Trace.Message($"[Adapter] Attempting connection to {uuid}");
+            Trace.WriteLine($"[Adapter] Attempting connection to {uuid}");
 
             var peripherials = _centralManager.RetrievePeripheralsWithIdentifiers(uuid);
             var peripherial = peripherials.SingleOrDefault();
@@ -260,7 +260,7 @@ namespace AppoMobi.Maui.BLE
 
         private async Task WaitForState(CBManagerState state, CancellationToken cancellationToken, bool configureAwait = false)
         {
-            Trace.Message("Adapter: Waiting for state: " + state);
+            Trace.WriteLine("Adapter: Waiting for state: " + state);
 
             while (_centralManager.State != state && !cancellationToken.IsCancellationRequested)
             {
@@ -386,7 +386,7 @@ namespace AppoMobi.Maui.BLE
                 }
                 else
                 {
-                    Trace.Message($"Parsing Advertisement: Ignoring Advertisement entry for key {key}, since we don't know how to parse it yet. Maybe you can open a Pull Request and implement it ;)");
+                    Trace.WriteLine($"Parsing Advertisement: Ignoring Advertisement entry for key {key}, since we don't know how to parse it yet. Maybe you can open a Pull Request and implement it ;)");
                 }
             }
 

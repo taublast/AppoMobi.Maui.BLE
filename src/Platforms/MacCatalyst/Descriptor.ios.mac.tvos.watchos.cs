@@ -33,7 +33,7 @@ namespace AppoMobi.Maui.BLE
 
           default:
             //TODO https://developer.apple.com/reference/corebluetooth/cbuuid/1667288-characteristic_descriptors
-            Trace.Message($"Descriptor: can't convert {NativeDescriptor.Value?.GetType().Name} with value {NativeDescriptor.Value?.ToString()} to byte[]");
+            Trace.WriteLine($"Descriptor: can't convert {NativeDescriptor.Value?.GetType().Name} with value {NativeDescriptor.Value?.ToString()} to byte[]");
             return null;
         }
       }

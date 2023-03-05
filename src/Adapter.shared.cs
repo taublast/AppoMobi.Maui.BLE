@@ -1,5 +1,4 @@
 ﻿using AppoMobi.Maui.BLE.Enums;
-using AppoMobi.Maui.BLE.EventArgs;
 using AppoMobi.Maui.BLE.Exceptions;
 using AppoMobi.Maui.BLE.Utils;
 using System.Collections.Concurrent;
@@ -49,11 +48,12 @@ namespace AppoMobi.Maui.BLE
 
 		public IReadOnlyList<Device> ConnectedDevices => ConnectedDeviceRegistry.Values.ToList();
 
-		public async Task StartScanningForDevicesAsync(Guid[] serviceUuids = null, Func<Device, bool> deviceFilter = null, bool allowDuplicatesKey = false, CancellationToken cancellationToken = default)
+		public async Task StartScanningForDevicesAsync(Guid[] serviceUuids = null, Func<Device, bool> deviceFilter = null,
+			bool allowDuplicatesKey = false, CancellationToken cancellationToken = default)
 		{
 			if (IsScanning)
 			{
-				Trace.Message("Adapter: Already scanning!");
+				Trace.WriteLine("Adapter: Already scanning!");
 				return;
 			}
 
@@ -68,9 +68,10 @@ namespace AppoMobi.Maui.BLE
 
 				using (cancellationToken.Register(() => _scanCancellationTokenSource?.Cancel()))
 				{
-					await StartScanningForDevicesNativeAsync(serviceUuids, allowDuplicatesKey, _scanCancellationTokenSource.Token);
+					await StartScanningForDevicesNativeAsync(serviceUuids, allowDuplicatesKey,
+						_scanCancellationTokenSource.Token);
 					await Task.Delay(ScanTimeout, _scanCancellationTokenSource.Token);
-					Trace.Message($"Adapter: Scan timeout has elapsed ({ScanTimeout}ms).");
+					Trace.WriteLine($"Adapter: Scan timeout has elapsed ({ScanTimeout}ms).");
 					CleanupScan();
 					ScanTimeoutElapsed?.Invoke(this, new System.EventArgs());
 				}
@@ -78,7 +79,15 @@ namespace AppoMobi.Maui.BLE
 			catch (TaskCanceledException)
 			{
 				CleanupScan();
-				Trace.Message("Adapter: Scan was cancelled.");
+				Trace.WriteLine("Adapter: Scan was cancelled.");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+			finally
+			{
+				IsScanning = false;
 			}
 		}
 
@@ -90,7 +99,7 @@ namespace AppoMobi.Maui.BLE
 			}
 			else
 			{
-				Trace.Message("Adapter: Already cancelled scan.");
+				Trace.WriteLine("Adapter: Already cancelled scan.");
 			}
 
 			return Task.FromResult(0);
@@ -116,7 +125,7 @@ namespace AppoMobi.Maui.BLE
 					{
 						if (args.Device.Id == device.Id)
 						{
-							Trace.Message("ConnectToDeviceAsync Connected: {0} {1}", args.Device.Id, args.Device.Name);
+							Trace.WriteLine("ConnectToDeviceAsync Connected: {0} {1}", args.Device.Id, args.Device.Name);
 							complete(true);
 						}
 					},
@@ -128,7 +137,7 @@ namespace AppoMobi.Maui.BLE
 					{
 						if (args.Device?.Id == device.Id)
 						{
-							Trace.Message("ConnectAsync Error: {0} {1}", args.Device?.Id, args.Device?.Name);
+							Trace.WriteLine("ConnectAsync Error: {0} {1}", args.Device?.Id, args.Device?.Name);
 							reject(new DeviceConnectionException((Guid)args.Device?.Id, args.Device?.Name,
 								args.ErrorMessage));
 						}
@@ -144,7 +153,7 @@ namespace AppoMobi.Maui.BLE
 		{
 			if (!ConnectedDevices.Contains(device))
 			{
-				Trace.Message("Disconnect async: device {0} not in the list of connected devices.", device.Name);
+				Trace.WriteLine("Disconnect async: device {0} not in the list of connected devices.", device.Name);
 				return Task.FromResult(false);
 			}
 
@@ -155,7 +164,7 @@ namespace AppoMobi.Maui.BLE
 			   {
 				   if (args.Device.Id == device.Id)
 				   {
-					   Trace.Message("DisconnectAsync Disconnected: {0} {1}", args.Device.Id, args.Device.Name);
+					   Trace.WriteLine("DisconnectAsync Disconnected: {0} {1}", args.Device.Id, args.Device.Name);
 					   complete(true);
 				   }
 			   }),
@@ -167,7 +176,7 @@ namespace AppoMobi.Maui.BLE
 			   {
 				   if (args.Device.Id == device.Id)
 				   {
-					   Trace.Message("DisconnectAsync", "Disconnect Error: {0} {1}", args.Device?.Id, args.Device?.Name);
+					   Trace.WriteLine("DisconnectAsync", "Disconnect Error: {0} {1}", args.Device?.Id, args.Device?.Name);
 					   reject(new Exception("Disconnect operation exception"));
 				   }
 			   }),
@@ -178,7 +187,7 @@ namespace AppoMobi.Maui.BLE
 
 		private void CleanupScan()
 		{
-			Trace.Message("Adapter: Stopping the scan for devices.");
+			Trace.WriteLine("Adapter: Stopping the scan for devices.");
 			StopScanNative();
 
 			if (_scanCancellationTokenSource != null)
@@ -214,24 +223,24 @@ namespace AppoMobi.Maui.BLE
 		{
 			if (disconnectRequested)
 			{
-				Trace.Message("DisconnectedPeripheral by user: {0}", device.Name);
+				Trace.WriteLine("DisconnectedPeripheral by user: {0}", device.Name);
 				DeviceDisconnected?.Invoke(this, new DeviceEventArgs { Device = device });
 			}
 			else
 			{
-				Trace.Message("DisconnectedPeripheral by lost signal: {0}", device.Name);
+				Trace.WriteLine("DisconnectedPeripheral by lost signal: {0}", device.Name);
 				DeviceConnectionLost?.Invoke(this, new DeviceErrorEventArgs { Device = device });
 
 				if (DiscoveredDevicesRegistry.TryRemove(device.Id, out _))
 				{
-					Trace.Message("Removed device from discovered devices list: {0}", device.Name);
+					Trace.WriteLine("Removed device from discovered devices list: {0}", device.Name);
 				}
 			}
 		}
 
 		public void HandleConnectionFail(Device device, string errorMessage)
 		{
-			Trace.Message("Failed to connect peripheral {0}: {1}", device.Id, device.Name);
+			Trace.WriteLine("Failed to connect peripheral {0}: {1}", device.Id, device.Name);
 			DeviceConnectionError?.Invoke(this, new DeviceErrorEventArgs
 			{
 				Device = device,

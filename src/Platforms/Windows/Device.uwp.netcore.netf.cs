@@ -38,7 +38,7 @@ namespace AppoMobi.Maui.BLE
 			//No current method to update the Rssi of a device
 			//In future implementations, maybe listen for device's advertisements
 
-			Trace.Message("Request RSSI not supported in UWP");
+			Trace.WriteLine("Request RSSI not supported in UWP");
 
 			return Task.FromResult(true);
 		}
@@ -75,13 +75,13 @@ namespace AppoMobi.Maui.BLE
 
 		private Task<int> RequestMtuNativeAsync(int requestValue)
 		{
-			Trace.Message("Request MTU not supported in UWP");
+			Trace.WriteLine("Request MTU not supported in UWP");
 			return Task.FromResult(-1);
 		}
 
 		private bool UpdateConnectionIntervalNative(ConnectionInterval interval)
 		{
-			Trace.Message("Update Connection Interval not supported in UWP");
+			Trace.WriteLine("Update Connection Interval not supported in UWP");
 			return false;
 		}
 

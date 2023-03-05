@@ -22,7 +22,7 @@ namespace AppoMobi.Maui.BLE.Extensions
                 case ScanMode.Passive:
                     if (Build.VERSION.SdkInt < BuildVersionCodes.M)
                     {
-                        Trace.Message("Scanmode Passive is not supported on API lvl < 23. Falling back to LowPower.");
+                        Trace.WriteLine("Scanmode Passive is not supported on API lvl < 23. Falling back to LowPower.");
                         return AndroidScanMode.LowPower;
                     }
                     return AndroidScanMode.Opportunistic;

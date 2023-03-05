@@ -76,7 +76,7 @@ namespace AppoMobi.Maui.BLE
 				throw new InvalidOperationException("Characteristic does not support read.");
 			}
 
-			Trace.Message("Characteristic.ReadAsync");
+			Trace.WriteLine("Characteristic.ReadAsync");
 			return await ReadNativeAsync();
 		}
 
@@ -94,7 +94,7 @@ namespace AppoMobi.Maui.BLE
 
 			var writeType = GetWriteType();
 
-			Trace.Message("Characteristic.WriteAsync");
+			Trace.WriteLine("Characteristic.WriteAsync");
 			return await WriteNativeAsync(data, writeType);
 		}
 
@@ -115,7 +115,7 @@ namespace AppoMobi.Maui.BLE
 				throw new InvalidOperationException("Characteristic does not support update.");
 			}
 
-			Trace.Message("Characteristic.StartUpdates");
+			Trace.WriteLine("Characteristic.StartUpdates");
 			return StartUpdatesNativeAsync();
 		}
 

@@ -23,7 +23,7 @@ namespace AppoMobi.Maui.BLE
 
 			_bleWatcher = new BluetoothLEAdvertisementWatcher { ScanningMode = ScanMode.ToNative() };
 
-			Trace.Message("Starting a scan for devices.");
+			Trace.WriteLine("Starting a scan for devices.");
 
 			_foundIds = new List<Guid>();
 
@@ -38,7 +38,7 @@ namespace AppoMobi.Maui.BLE
 		{
 			if (_bleWatcher != null)
 			{
-				Trace.Message("Stopping the scan for devices");
+				Trace.WriteLine("Stopping the scan for devices");
 				_bleWatcher.Stop();
 				_bleWatcher = null;
 
@@ -48,7 +48,7 @@ namespace AppoMobi.Maui.BLE
 
 		protected async Task ConnectToDeviceNativeAsync(Maui.BLE.Device device, ConnectParameters connectParameters, CancellationToken cancellationToken)
 		{
-			Trace.Message($"Connecting to device with ID:  {device.Id.ToString()}");
+			Trace.WriteLine($"Connecting to device with ID:  {device.Id.ToString()}");
 
 			if (!(device.NativeDevice is ObservableBluetoothLEDevice nativeDevice))
 				return;
@@ -90,7 +90,7 @@ namespace AppoMobi.Maui.BLE
 		protected void DisconnectDeviceNative(Maui.BLE.Device device)
 		{
 			// Windows doesn't support disconnecting, so currently just dispose of the device
-			Trace.Message($"Disconnected from device with ID:  {device.Id.ToString()}");
+			Trace.WriteLine($"Disconnected from device with ID:  {device.Id.ToString()}");
 
 			if (device.NativeDevice is ObservableBluetoothLEDevice nativeDevice)
 			{
@@ -125,7 +125,7 @@ namespace AppoMobi.Maui.BLE
 		{
 			//currently no way to retrieve paired and connected devices on windows without using an
 			//async method.
-			Trace.Message("Returning devices connected by this app only");
+			Trace.WriteLine("Returning devices connected by this app only");
 			return ConnectedDevices;
 		}
 
@@ -153,7 +153,7 @@ namespace AppoMobi.Maui.BLE
 
 			if (DiscoveredDevicesRegistry.TryGetValue(deviceId, out var device))
 			{
-				Trace.Message("AdvertisedPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
+				Trace.WriteLine("AdvertisedPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
 				(device as Maui.BLE.Device)?.Update(btAdv.RawSignalStrengthInDBm, ParseAdvertisementData(btAdv.Advertisement));
 				this.HandleDiscoveredDevice(device);
 			}
@@ -193,7 +193,7 @@ namespace AppoMobi.Maui.BLE
 						return;
 					}
 
-					Trace.Message("DiscoveredPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
+					Trace.WriteLine("DiscoveredPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
 					this.HandleDiscoveredDevice(device);
 				}
 			}

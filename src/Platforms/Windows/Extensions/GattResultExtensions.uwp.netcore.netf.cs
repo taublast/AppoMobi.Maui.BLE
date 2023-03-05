@@ -48,7 +48,7 @@ namespace AppoMobi.Maui.BLE.Extensions
             {
                 //output trace message with status of update
                 case GattCommunicationStatus.Success:
-                    Trace.Message($"[{tag}] success.");
+                    Trace.WriteLine($"[{tag}] success.");
                     return null;
                 case GattCommunicationStatus.ProtocolError when protocolError != null:
                     return $"[{tag}] failed with status: {status} and protocol error {protocolError.GetErrorString()}";

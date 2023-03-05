@@ -113,7 +113,7 @@ namespace AppoMobi.Maui.BLE
 					}
 					catch (Exception ex)
 					{
-						Trace.Message("Exception while cleanup of service: {0}", ex.Message);
+						Trace.WriteLine("Exception while cleanup of service: {0}", ex.Message);
 					}
 				}
 
