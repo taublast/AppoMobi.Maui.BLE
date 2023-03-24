@@ -144,7 +144,7 @@ namespace AppoMobi.Maui.BLE
 
 
 
-#if (NET6_0 && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 
 		public virtual void Dispose()
 		{

@@ -13,7 +13,7 @@ namespace AppoMobi.Maui.BLE
 
 		private Guid[] _serviceUuids;
 
-		private bool HasFilter => _serviceUuids?.Any() ?? false;
+		private bool HasServicesFilter => _serviceUuids?.Any() ?? false;
 
 		private List<Guid> _foundIds;
 
@@ -30,6 +30,17 @@ namespace AppoMobi.Maui.BLE
 			_bleWatcher.Received -= DeviceFoundAsync;
 			_bleWatcher.Received += DeviceFoundAsync;
 
+			if (_serviceUuids != null)
+			{
+				var advertisementFilter = new BluetoothLEAdvertisementFilter();
+				foreach (var serviceUuid in _serviceUuids)
+				{
+					advertisementFilter.Advertisement.ServiceUuids.Add(serviceUuid);
+				}
+
+				_bleWatcher.AdvertisementFilter = advertisementFilter;
+			}
+
 			_bleWatcher.Start();
 			return Task.FromResult(true);
 		}
@@ -39,9 +50,9 @@ namespace AppoMobi.Maui.BLE
 			if (_bleWatcher != null)
 			{
 				Trace.WriteLine("Stopping the scan for devices");
+				_bleWatcher.Received -= DeviceFoundAsync;
 				_bleWatcher.Stop();
 				_bleWatcher = null;
-
 				_foundIds = null;
 			}
 		}
@@ -151,52 +162,89 @@ namespace AppoMobi.Maui.BLE
 		{
 			var deviceId = ParseDeviceId(btAdv.BluetoothAddress);
 
-			if (DiscoveredDevicesRegistry.TryGetValue(deviceId, out var device))
+			var bluetoothLeDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(btAdv.BluetoothAddress);
+
+			if (bluetoothLeDevice != null)
 			{
-				Trace.WriteLine("AdvertisedPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
-				(device as Maui.BLE.Device)?.Update(btAdv.RawSignalStrengthInDBm, ParseAdvertisementData(btAdv.Advertisement));
-				this.HandleDiscoveredDevice(device);
-			}
-			else
-			{
-				var bluetoothLeDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(btAdv.BluetoothAddress);
-				if (bluetoothLeDevice != null) //make sure advertisement bluetooth address actually returns a device
+				var device = new Maui.BLE.Device(this, bluetoothLeDevice, btAdv.RawSignalStrengthInDBm, deviceId, ParseAdvertisementData(btAdv.Advertisement));
+
+				if (DiscoveredDevicesRegistry.TryGetValue(deviceId, out var existingDevice))
 				{
-					//if there is a filter on devices find the services for the device
-					if (HasFilter)
+					//existing
+					Trace.WriteLine("Advertised Peripheral: {0} Id: {1}, Rssi: {2}", existingDevice.Name, existingDevice.Id, btAdv.RawSignalStrengthInDBm);
+
+					existingDevice.Update(btAdv.RawSignalStrengthInDBm, ParseAdvertisementData(btAdv.Advertisement));
+					//this.HandleDiscoveredDevice(device);
+
+					existingDevice.MergeOrUpdateAdvertising(device.AdvertisementRecords);
+				}
+				else
+				{
+					//new
+					bool passed = true;
+					//if (HasServicesFilter)
+					//{
+					//	passed = false;
+					//	try
+					//	{
+					//		var services = await bluetoothLeDevice.GetGattServicesAsync();
+
+					//		if (services.Services.Any())
+					//		{
+					//			//compare the list of services provided with the _serviceIds being listened for
+					//			var items = (from x in services.Services
+					//						 join y in _serviceUuids on x.Uuid equals y
+					//						 select x)
+					//				.ToList();
+
+					//			foreach (var item in items)
+					//			{
+					//				if (_serviceUuids.Contains(item.Uuid))
+					//				{
+					//					passed = true;
+					//					break;
+					//				}
+					//			}
+					//		}
+					//	}
+					//	catch (Exception e)
+					//	{
+					//		Console.WriteLine(e);
+					//	}
+					//}
+
+					if (passed)
 					{
-						var services = await bluetoothLeDevice.GetGattServicesAsync();
-
-						if (services.Services.Any())
-						{
-							//compare the list of services provided with the _serviceIds being listened for
-							var items = (from x in services.Services
-										 join y in _serviceUuids on x.Uuid equals y
-										 select x)
-										 .ToList();
-
-							//if no services then ignore
-							if (!items.Any())
-								return;
-						}
+						Trace.WriteLine("Discovered Peripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
+						this.HandleDiscoveredDevice(device);
 					}
-
-					device = new Maui.BLE.Device(this, bluetoothLeDevice, btAdv.RawSignalStrengthInDBm, deviceId, ParseAdvertisementData(btAdv.Advertisement));
-
-					if (DiscoveredDevicesRegistry.ContainsKey(device.Id))
+					else
 					{
-						//try and merge advertising data
-						var existingDevice = DiscoveredDevicesRegistry[device.Id];
-
-						existingDevice.MergeOrUpdateAdvertising(device.AdvertisementRecords);
-
-						return;
+						Trace.WriteLine("Filtered Peripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
 					}
-
-					Trace.WriteLine("DiscoveredPeripheral: {0} Id: {1}, Rssi: {2}", device.Name, device.Id, btAdv.RawSignalStrengthInDBm);
-					this.HandleDiscoveredDevice(device);
 				}
 			}
+
+
+			//{
+			//	if (bluetoothLeDevice != null) //make sure advertisement bluetooth address actually returns a device
+			//	{
+			//		//if there is a filter on devices find the services for the device
+
+
+			//		if (DiscoveredDevicesRegistry.ContainsKey(device.Id))
+			//		{
+			//			//try and merge advertising data
+			//			var existingDevice = DiscoveredDevicesRegistry[device.Id];
+
+			//			existingDevice.MergeOrUpdateAdvertising(device.AdvertisementRecords);
+
+			//			return;
+			//		}
+
+
+			//	}
+			//}
 		}
 
 		/// <summary>

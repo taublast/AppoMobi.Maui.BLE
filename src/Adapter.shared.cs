@@ -2,6 +2,7 @@
 using AppoMobi.Maui.BLE.Exceptions;
 using AppoMobi.Maui.BLE.Utils;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using PlatformNotSupportedException = AppoMobi.Maui.BLE.Exceptions.PlatformNotSupportedException;
 
 namespace AppoMobi.Maui.BLE
@@ -34,7 +35,7 @@ namespace AppoMobi.Maui.BLE
 			private set => _isScanning = value;
 		}
 
-		public int ScanTimeout { get; set; } = 10000;
+		public int ScanTimeout { get; set; } = 30000;
 		public ScanMode ScanMode { get; set; } = ScanMode.LowPower;
 
 		protected ConcurrentDictionary<Guid, Device> DiscoveredDevicesRegistry { get; } = new ConcurrentDictionary<Guid, Device>();
@@ -70,7 +71,9 @@ namespace AppoMobi.Maui.BLE
 				{
 					await StartScanningForDevicesNativeAsync(serviceUuids, allowDuplicatesKey,
 						_scanCancellationTokenSource.Token);
+
 					await Task.Delay(ScanTimeout, _scanCancellationTokenSource.Token);
+
 					Trace.WriteLine($"Adapter: Scan timeout has elapsed ({ScanTimeout}ms).");
 					CleanupScan();
 					ScanTimeoutElapsed?.Invoke(this, new System.EventArgs());
@@ -201,17 +204,24 @@ namespace AppoMobi.Maui.BLE
 
 		public void HandleDiscoveredDevice(Device device)
 		{
-			if (_currentScanDeviceFilter != null && !_currentScanDeviceFilter(device))
-				return;
-
 			DeviceAdvertised?.Invoke(this, new DeviceEventArgs { Device = device });
 
 			// TODO (sms): check equality implementation of device
 			if (DiscoveredDevicesRegistry.ContainsKey(device.Id))
 				return;
 
+			bool isNew = !DiscoveredDevicesRegistry.ContainsKey(device.Id);
+
 			DiscoveredDevicesRegistry[device.Id] = device;
-			DeviceDiscovered?.Invoke(this, new DeviceEventArgs { Device = device });
+
+			if (_currentScanDeviceFilter != null && !_currentScanDeviceFilter(device))
+				return;
+
+			if (isNew)
+			{
+				Debug.WriteLine($"[BLE] DeviceDiscovered {device.Id}");
+				DeviceDiscovered?.Invoke(this, new DeviceEventArgs { Device = device });
+			}
 		}
 
 		public void HandleConnectedDevice(Device device)
@@ -249,7 +259,7 @@ namespace AppoMobi.Maui.BLE
 		}
 
 
-#if (NET6_0 && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 		protected Task StartScanningForDevicesNativeAsync(Guid[] serviceUuids, bool allowDuplicatesKey, CancellationToken scanCancellationToken)
 		{
 			throw new PlatformNotSupportedException();

@@ -3,43 +3,43 @@ using PlatformNotSupportedException = AppoMobi.Maui.BLE.Exceptions.PlatformNotSu
 
 namespace AppoMobi.Maui.BLE
 {
-    public partial class Descriptor
-    {
-        private string _name;
+	public partial class Descriptor
+	{
+		private string _name;
 
-        public string Name => _name ?? (_name = KnownDescriptors.Lookup(Id).Name);
+		public string Name => _name ?? (_name = KnownDescriptors.Lookup(Id).Name);
 
-        public byte[] Value => NativeValue;
+		public byte[] Value => NativeValue;
 
-        public Guid Id => NativeGuid;
+		public Guid Id => NativeGuid;
 
-        public Characteristic Characteristic { get; }
+		public Characteristic Characteristic { get; }
 
-        protected Descriptor()
-        {
-        }
+		protected Descriptor()
+		{
+		}
 
-        protected Descriptor(Characteristic characteristic)
-        {
-            Characteristic = characteristic;
-        }
+		protected Descriptor(Characteristic characteristic)
+		{
+			Characteristic = characteristic;
+		}
 
-        public Task<byte[]> ReadAsync(CancellationToken cancellationToken = default)
-        {
-            return ReadNativeAsync();
-        }
+		public Task<byte[]> ReadAsync(CancellationToken cancellationToken = default)
+		{
+			return ReadNativeAsync();
+		}
 
-        public Task WriteAsync(byte[] data, CancellationToken cancellationToken = default)
-        {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+		public Task WriteAsync(byte[] data, CancellationToken cancellationToken = default)
+		{
+			if (data == null)
+			{
+				throw new ArgumentNullException(nameof(data));
+			}
 
-            return WriteNativeAsync(data);
-        }
+			return WriteNativeAsync(data);
+		}
 
-#if (NET6_0 && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 
         protected Guid NativeGuid => throw new PlatformNotSupportedException();
 
@@ -51,5 +51,5 @@ namespace AppoMobi.Maui.BLE
 
 #endif
 
-    }
+	}
 }

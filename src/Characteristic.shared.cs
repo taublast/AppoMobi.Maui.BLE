@@ -1,5 +1,4 @@
 ﻿using AppoMobi.Maui.BLE.Enums;
-using AppoMobi.Maui.BLE.EventArgs;
 using System.Text;
 using PlatformNotSupportedException = AppoMobi.Maui.BLE.Exceptions.PlatformNotSupportedException;
 
@@ -140,7 +139,7 @@ namespace AppoMobi.Maui.BLE
 			return descriptors.FirstOrDefault(d => d.Id == id);
 		}
 
-#if (NET6_0 && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 		protected Guid NativeGuid => throw new PlatformNotSupportedException();
 
 		protected string NativeUuid => throw new PlatformNotSupportedException();

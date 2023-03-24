@@ -8,7 +8,9 @@
 		{
 			var text = string.Format(format, args);
 
-			//Debug.WriteLine($"[BLE LIB] {text}");
+#if DEBUG
+			System.Diagnostics.Trace.WriteLine($"[BLE LIB] {text}");
+#endif
 
 			try
 			{
