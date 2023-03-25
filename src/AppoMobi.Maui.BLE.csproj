@@ -16,7 +16,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		
-		<Version>7.0.0.1</Version>
+		<Version>7.0.0.2</Version>
 		<Description>Bluetooth LE for .Net Maui</Description>
 		<PackageTags>maui ble bluetooth</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
