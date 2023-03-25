@@ -57,7 +57,9 @@ namespace AppoMobi.Maui.BLE
 			}
 		}
 
-		protected async Task ConnectToDeviceNativeAsync(Maui.BLE.Device device, ConnectParameters connectParameters, CancellationToken cancellationToken)
+		protected async Task ConnectToDeviceNativeAsync(Maui.BLE.Device device,
+			ConnectParameters connectParameters,
+			CancellationToken cancellationToken)
 		{
 			Trace.WriteLine($"Connecting to device with ID:  {device.Id.ToString()}");
 
@@ -69,7 +71,7 @@ namespace AppoMobi.Maui.BLE
 
 			ConnectedDeviceRegistry[device.Id.ToString()] = device;
 
-			await nativeDevice.ConnectAsync();
+			await nativeDevice.ConnectAsync(cancellationToken);
 		}
 
 		private void Device_ConnectionStatusChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -111,7 +113,10 @@ namespace AppoMobi.Maui.BLE
 			}
 		}
 
-		public async Task<Maui.BLE.Device> ConnectToKnownDeviceAsync(Guid deviceGuid, ConnectParameters connectParameters = default, CancellationToken cancellationToken = default, bool dontThrowExceptionOnNotFound = false)
+		public async Task<Maui.BLE.Device> ConnectToKnownDeviceAsync(Guid deviceGuid,
+			ConnectParameters connectParameters = default,
+			CancellationToken cancellationToken = default,
+			bool dontThrowExceptionOnNotFound = false)
 		{
 			//convert GUID to string and take last 12 characters as MAC address
 			var guidString = deviceGuid.ToString("N").Substring(20);
@@ -129,6 +134,7 @@ namespace AppoMobi.Maui.BLE
 			var knownDevice = new Maui.BLE.Device(this, nativeDevice, 0, deviceGuid);
 
 			await ConnectToDeviceAsync(knownDevice, cancellationToken: cancellationToken);
+
 			return knownDevice;
 		}
 

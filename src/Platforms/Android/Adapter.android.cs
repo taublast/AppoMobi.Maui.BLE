@@ -127,7 +127,8 @@ namespace AppoMobi.Maui.BLE
 			}
 		}
 
-		protected Task ConnectToDeviceNativeAsync(Maui.BLE.Device device, ConnectParameters connectParameters,
+		protected Task ConnectToDeviceNativeAsync(Maui.BLE.Device device,
+			ConnectParameters connectParameters,
 			CancellationToken cancellationToken)
 		{
 			((Maui.BLE.Device)device).Connect(connectParameters, cancellationToken);
@@ -140,7 +141,10 @@ namespace AppoMobi.Maui.BLE
 			((Maui.BLE.Device)device).Disconnect();
 		}
 
-		public async Task<Maui.BLE.Device> ConnectToKnownDeviceAsync(Guid deviceGuid, ConnectParameters connectParameters = default(ConnectParameters), CancellationToken cancellationToken = default(CancellationToken), bool dontThrowExceptionOnNotFound = false)
+		public async Task<Maui.BLE.Device> ConnectToKnownDeviceAsync(Guid deviceGuid,
+			ConnectParameters connectParameters = default(ConnectParameters),
+			CancellationToken cancellationToken = default,
+			bool dontThrowExceptionOnNotFound = false)
 		{
 			var macBytes = deviceGuid.ToByteArray().Skip(10).Take(6).ToArray();
 			var nativeDevice = _bluetoothAdapter.GetRemoteDevice(macBytes);
@@ -156,6 +160,7 @@ namespace AppoMobi.Maui.BLE
 			var device = new Maui.BLE.Device(this, nativeDevice, null, 0, new byte[] { });
 
 			await ConnectToDeviceAsync(device, connectParameters, cancellationToken);
+
 			return device;
 		}
 

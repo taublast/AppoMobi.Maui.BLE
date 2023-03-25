@@ -108,7 +108,9 @@ namespace AppoMobi.Maui.BLE
 			return Task.FromResult(0);
 		}
 
-		public async Task ConnectToDeviceAsync(Device device, ConnectParameters connectParameters = default, CancellationToken cancellationToken = default)
+		public async Task ConnectToDeviceAsync(Device device,
+			ConnectParameters connectParameters = default,
+			CancellationToken cancellationToken = default)
 		{
 			if (device == null)
 				throw new ArgumentNullException(nameof(device));

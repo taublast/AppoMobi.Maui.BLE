@@ -294,7 +294,7 @@ namespace AppoMobi.Maui.BLE
 		/// <summary>ConnectAsync to this bluetooth device.</summary>
 		/// <returns>Connection task</returns>
 		/// <exception cref="Exception">Thorws Exception when no permission to access device</exception>
-		public async Task ConnectAsync()
+		public async Task ConnectAsync(CancellationToken cancel)
 		{
 			await Application.Current.Dispatcher.DispatchAsync(async () =>
 			{
@@ -316,10 +316,8 @@ namespace AppoMobi.Maui.BLE
 				Name = BluetoothLEDevice.Name;
 
 				// Get all the services for this device
-				var getGattServicesAsyncTokenSource = new CancellationTokenSource(5000);
 				var getGattServicesAsyncTask = await Task.Run(
-			() => BluetoothLEDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached),
-			getGattServicesAsyncTokenSource.Token);
+			() => BluetoothLEDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached), cancel);
 
 				_result = await getGattServicesAsyncTask;
 
