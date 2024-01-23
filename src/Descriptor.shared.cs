@@ -39,7 +39,7 @@ namespace AppoMobi.Maui.BLE
 			return WriteNativeAsync(data);
 		}
 
-#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET8_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 
         protected Guid NativeGuid => throw new PlatformNotSupportedException();
 

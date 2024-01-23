@@ -64,7 +64,7 @@ namespace AppoMobi.Maui.BLE
 			return CreateNativeAdapter();
 		}
 
-#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET8_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 
         public bool HasPermissions => throw new NotImplementedException();
 

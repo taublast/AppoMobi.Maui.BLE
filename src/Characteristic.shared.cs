@@ -139,7 +139,7 @@ namespace AppoMobi.Maui.BLE
 			return descriptors.FirstOrDefault(d => d.Id == id);
 		}
 
-#if ((NET6_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
+#if ((NET8_0 || NET7_0) && !ANDROID && !IOS && !MACCATALYST && !WINDOWS && !TIZEN)
 		protected Guid NativeGuid => throw new PlatformNotSupportedException();
 
 		protected string NativeUuid => throw new PlatformNotSupportedException();
